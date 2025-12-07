@@ -1,100 +1,76 @@
-let selectedPet = "";
+let pet = "";
+let recipes = {};
+let harmfulIngredients = {};
 
-function selectPet(pet) {
-    selectedPet = pet;
-    document.getElementById('pet-title').innerText = "🐾 " + pet;
-    document.getElementById('home').style.display = 'none';
-    document.getElementById('features').style.display = 'block';
+// Load JSON files
+fetch('data/recipes.json')
+    .then(response => response.json())
+    .then(data => recipes = data);
+
+fetch('data/harmful_ingredients.json')
+    .then(response => response.json())
+    .then(data => harmfulIngredients = data);
+
+// Pet selection
+function selectPet(selectedPet) {
+    pet = selectedPet;
+    document.getElementById('pet-choice').style.display = 'none';
+    document.getElementById('main-menu').style.display = 'block';
 }
 
-// Show tutorial
-function showTutorial() {
-    document.getElementById('home').style.display = 'none';
-    document.getElementById('tutorial').style.display = 'block';
+// Back button
+function backToMenu() {
+    document.getElementById('mood-section').style.display = 'none';
+    document.getElementById('ingredient-section').style.display = 'none';
+    document.getElementById('main-menu').style.display = 'block';
 }
 
-function hideTutorial() {
-    document.getElementById('tutorial').style.display = 'none';
-    document.getElementById('home').style.display = 'block';
+// Mood detection
+function showMoodInput() {
+    document.getElementById('main-menu').style.display = 'none';
+    document.getElementById('mood-section').style.display = 'block';
 }
 
-// Show one feature, hide others
-function showFeature(feature) {
-    let features = ['food', 'ingredient', 'mood'];
-    features.forEach(f => {
-        document.getElementById(f + '-feature').style.display = (f === feature) ? 'block' : 'none';
-    });
-}
-
-// ================== FOOD CLASSIFIER ==================
-// Fake logic for demo
-function classifyFood() {
-    let fileInput = document.getElementById('food-file').value;
-    let name = fileInput.split('\\').pop().split('/').pop().split('.')[0]; // filename
-    let recipes = {
-        "pizza": ["Cheese & Chicken Mini Pizza", "Pumpkin Pet Pizza"],
-        "burger": ["Mini Chicken Burger", "Turkey Patty Bites"]
-    };
-
-    let resultDiv = document.getElementById('food-result');
-    if (recipes[name]) {
-        let html = "<h4>Detected: " + name + "</h4>";
-        html += "<p>Pet-safe recipes:</p><ul>";
-        recipes[name].forEach(r => {
-            html += "<li>" + r + "</li>";
-        });
-        html += "</ul>";
-        resultDiv.innerHTML = html;
-    } else {
-        resultDiv.innerHTML = "<p>Food not recognized!</p>";
-    }
-}
-
-// ================== INGREDIENT CHECKER ==================
-function checkIngredient() {
-    let input = document.getElementById('ingredient-input').value.toLowerCase();
-    let harmful = {
-        "onion": "❌ Highly toxic for cats and dogs",
-        "garlic": "❌ Avoid, causes anemia",
-        "chocolate": "❌ Very dangerous for pets"
-    };
-    let safeMsg = "✔ Safe for your pet!";
-    document.getElementById('ingredient-result').innerText = harmful[input] || safeMsg;
-}
-
-// ================== PET MOOD ANALYZER ==================
-function analyzeMood() {
-    let desc = document.getElementById('mood-input').value.toLowerCase();
+function detectMood() {
+    const desc = document.getElementById('mood-input').value.toLowerCase();
     let mood = "neutral";
 
-    if (desc.includes("meow") || desc.includes("cry") || desc.includes("loud")) mood = "anxious";
-    else if (desc.includes("hiss") || desc.includes("angry") || desc.includes("scratch")) mood = "angry";
-    else if (desc.includes("sleep") || desc.includes("yawn") || desc.includes("tired")) mood = "sleepy";
-    else if (desc.includes("play") || desc.includes("run") || desc.includes("jump")) mood = "playful";
+    if(desc.includes("meow") || desc.includes("cry")) mood = "anxious";
+    else if(desc.includes("sleep")) mood = "relaxed";
+    else if(desc.includes("hiss") || desc.includes("angry")) mood = "angry";
 
-    let musicOptions = {
-        "anxious": ["Calming Piano", "Lo-fi for Pets"],
-        "angry": ["Soft Classical", "Ambient Forest"],
-        "sleepy": ["Gentle Ambient Pads"],
-        "playful": ["Upbeat Cat Chimes"],
-        "neutral": ["Any playlist"]
-    };
+    const recs = recipes[mood] || ["Check back later!"];
+    let html = `<p>Mood detected: <strong>${mood}</strong></p>`;
+    html += "<p>Recommended for your pet:</p><ul>";
+    recs.forEach(item => {
+        html += `<li><a href="${item.link}" target="_blank">${item.name}</a></li>`;
+    });
+    html += "</ul>";
 
-    let foodOptions = {
-        "anxious": ["Warm Chicken Broth", "Pumpkin Puree"],
-        "angry": ["Crunchy calming treats"],
-        "sleepy": ["Light tuna snack"],
-        "playful": ["Protein bites", "Interactive snack ball treat"],
-        "neutral": ["Regular pet-safe food"]
-    };
-
-    let music = musicOptions[mood][Math.floor(Math.random() * musicOptions[mood].length)];
-    let food = foodOptions[mood][Math.floor(Math.random() * foodOptions[mood].length)];
-
-    document.getElementById('mood-result').innerHTML = `
-        <p>Mood detected: <b>${mood}</b></p>
-        <p>🎵 Music: ${music}</p>
-        <p>🍖 Food: ${food}</p>
-    `;
+    document.getElementById('mood-result').innerHTML = html;
 }
 
+// Ingredient checker
+function showIngredientChecker() {
+    document.getElementById('main-menu').style.display = 'none';
+    document.getElementById('ingredient-section').style.display = 'block';
+}
+
+function checkIngredient() {
+    const ingredient = document.getElementById('ingredient-input').value.toLowerCase();
+    let status = "Unknown";
+    let reason = "";
+
+    if(harmfulIngredients.bad.includes(ingredient)) {
+        status = "Never give!";
+        reason = harmfulIngredients.bad_reason[ingredient] || "";
+    } else if(harmfulIngredients.questionable.includes(ingredient)) {
+        status = "Try to avoid";
+        reason = harmfulIngredients.questionable_reason[ingredient] || "";
+    } else {
+        status = "Safe";
+        reason = "Can feed in moderation.";
+    }
+
+    document.getElementById('ingredient-result').innerHTML = `<p>${ingredient}: <strong>${status}</strong> - ${reason}</p>`;
+}

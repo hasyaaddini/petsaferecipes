@@ -1,9 +1,14 @@
 {
-  "chocolate": ["chocolate_cake", "chocolate"],
-  "garlic": ["pizza", "pasta", "dumplings"],
-  "onion": ["pizza", "pasta", "dumplings"],
-  "grapes": ["salad", "grapes"],
-  "xylitol": ["sugar_free_cookie"],
-  "avocado": ["avocado"]
+  "bad": ["chocolate", "onion", "garlic"],
+  "questionable": ["milk", "cheese", "egg"],
+  "bad_reason": {
+    "chocolate": "Contains theobromine, toxic to pets.",
+    "onion": "Can cause anemia in pets.",
+    "garlic": "Can damage red blood cells."
+  },
+  "questionable_reason": {
+    "milk": "Some pets are lactose intolerant.",
+    "cheese": "High fat, feed in moderation.",
+    "egg": "Cook before giving, small amount."
+  }
 }
-

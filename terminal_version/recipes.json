@@ -1,38 +1,18 @@
 {
-  "pizza": {
-    "safe_for": {"cat": false, "dog": false},
-    "reason": "Often contains onion/garlic, salt, and spices.",
-    "alternatives": ["boiled_chicken_bites", "salmon_mash"],
-    "recipes": {
-      "boiled_chicken_bites": {
-        "title": "Boiled Chicken Bites",
-        "ingredients": ["chicken breast (unsalted)", "water"],
-        "steps": ["Boil chicken until cooked", "Shred and cool", "Serve tiny portions"]
-      },
-      "salmon_mash": {
-        "title": "Simple Salmon Mash",
-        "ingredients": ["cooked salmon (bones removed)", "plain rice", "pumpkin"],
-        "steps": ["Flake salmon", "Mix with rice and pumpkin", "Serve cooled small portion"]
-      }
-    }
-  },
-  "burger": {
-    "safe_for": {"cat": false, "dog": false},
-    "reason": "Contains seasonings, salt, and possibly onions.",
-    "alternatives": ["boiled_chicken_bites", "plain_rice_bowl"],
-    "recipes": {
-      "plain_rice_bowl": {
-        "title": "Plain Rice Bowl with Chicken",
-        "ingredients": ["plain cooked rice", "shredded boiled chicken"],
-        "steps": ["Mix rice with chicken", "Cool before serving"]
-      }
-    }
-  },
-  "salmon": {
-    "safe_for": {"cat": true, "dog": true},
-    "reason": "Cooked boneless salmon in small amounts is okay.",
-    "alternatives": ["salmon_mash"],
-    "recipes": {}
-  }
+  "anxious": [
+    {"name":"Lo-fi for Pets","link":"https://www.youtube.com/watch?v=5qap5aO4i9A"},
+    {"name":"Chamomile Treats","link":"https://www.example.com/chamomile-treats"}
+  ],
+  "playful": [
+    {"name":"Cat Bossa Nova","link":"https://www.youtube.com/watch?v=jfKfPfyJRdk"},
+    {"name":"Tuna Bites","link":"https://www.example.com/tuna-bites"}
+  ],
+  "angry": [
+    {"name":"Calming Classical Playlist","link":"https://www.youtube.com/watch?v=1ZYbU82GVz4"}
+  ],
+  "neutral": [
+    {"name":"Any regular food","link":"https://www.example.com/recipes"}
+  ]
 }
+
 

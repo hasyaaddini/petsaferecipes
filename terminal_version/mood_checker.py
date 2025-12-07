@@ -68,3 +68,15 @@ def save_log(pet_type, mood, music, food):
 
     with open("usage_log.json", "w") as f:
         json.dump(logs, f, indent=4)
+
+# Detect pet mood from user description
+def detect_mood(description):
+    description = description.lower()
+    if any(word in description for word in ["meow", "cry", "yowl"]):
+        return "anxious"
+    elif "sleep" in description:
+        return "relaxed"
+    elif any(word in description for word in ["hiss", "angry", "bite"]):
+        return "angry"
+    else:
+        return "neutral"
