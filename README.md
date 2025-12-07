@@ -5,9 +5,7 @@ pet safe recipes
 
 ## Live (Web) Demo
 Open this link to try the web UI (GitHub Pages):  
-https://<your-github-username>.github.io/<repo-name>/web_version/
-
-> To enable: go to GitHub repo → Settings → Pages → Source: `main` branch / `/web_version` folder. Save and wait ~1 minute.
+[https://<your-github-username>.github.io/<repo-name>/web_version/](https://hasyaaddini.github.io/petsaferecipes/) 
 
 ## Terminal app
 Run the terminal version:
