@@ -1,127 +1,96 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>PetChef — Pet-Safe (Pixel UI)</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8">
+  <title>PetChef — Pet-Safe</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="stage">
-    <header class="titlebar">
-      <div class="logo">🐾</div>
-      <h1>PetChef</h1>
-      <div class="mini">pixel pet-safe recipes</div>
+  <div class="app">
+    <header class="pixel-header">
+      <h1>🐾 PetChef</h1>
+      <p class="subtitle">Pixel-cute pet-safe recipe recommender</p>
     </header>
 
-    <!-- HOME -->
-    <section id="home" class="screen">
-      <div class="box home-box">
-        <div class="prompt">Who are we cooking for?</div>
-        <div class="choices">
-          <button class="pixel-btn" onclick="choosePet('dog')">🐶 DOGS</button>
-          <button class="pixel-btn" onclick="choosePet('cat')">🐱 CATS</button>
+    <main>
+      <section id="home" class="page">
+        <div class="center">
+          <button class="big-btn" onclick="choosePet('dog')">🐶 Dogs</button>
+          <button class="big-btn" onclick="choosePet('cat')">🐱 Cats</button>
+          <div class="small"> <button class="ghost" onclick="showTutorial()">Tutorial</button> </div>
         </div>
-        <button class="link-btn" onclick="showTutorial()">❓ Tutorial</button>
-      </div>
-    </section>
+      </section>
 
-    <!-- MENU -->
-    <section id="menu" class="screen hidden">
-      <div class="box">
-        <div class="toprow">
-          <button class="back tiny" onclick="goHome()">← Home</button>
-          <div class="screen-title" id="petLabel">Pet</div>
+      <section id="menu" class="page hidden">
+        <div class="topbar">
+          <button class="back" onclick="goHome()">← Back</button>
+          <h2 id="petTitle">Pet</h2>
         </div>
 
         <div class="menu-grid">
-          <div class="menu-card" onclick="openUpload()">
-            <div class="icon">📸</div>
+          <div class="card" onclick="openUpload()">
             <h3>Upload Food Photo</h3>
-            <p>Detect food and get pet-safe recipes.</p>
+            <p>Snap or upload a single food image.</p>
           </div>
-
-          <div class="menu-card" onclick="openIngredientChecker()">
-            <div class="icon">🌿</div>
+          <div class="card" onclick="openIngredientChecker()">
             <h3>Ingredient Checker</h3>
-            <p>Type an ingredient to check safety.</p>
+            <p>Type an ingredient to check if it's safe.</p>
           </div>
-
-          <div class="menu-card" onclick="showTutorial()">
-            <div class="icon">📚</div>
+          <div class="card" onclick="showTutorial()">
             <h3>Tutorial</h3>
             <p>How to use the app.</p>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- UPLOAD -->
-    <section id="upload" class="screen hidden">
-      <div class="box">
-        <div class="toprow">
-          <button class="back tiny" onclick="goMenu()">← Back</button>
-          <div class="screen-title">Upload Photo</div>
+      <section id="upload" class="page hidden">
+        <div class="topbar">
+          <button class="back" onclick="goMenu()">← Back</button>
+          <h2>Upload Food Photo</h2>
         </div>
 
-        <div class="uploader">
-          <input id="fileInput" type="file" accept="image/*" />
-          <button class="pixel-btn" id="detectBtn" onclick="detectFood()">Detect</button>
+        <div class="upload-box">
+          <input id="fileInput" type="file" accept="image/*">
+          <button id="detectBtn" class="primary" onclick="detectFood()">Detect</button>
         </div>
 
-        <div id="resultArea" class="result hidden">
-          <div class="preview-area">
-            <img id="preview" class="preview" src="" alt="preview" />
-          </div>
-          <div class="info-area">
-            <div id="detected" class="detected">Detected: —</div>
-            <div id="safety" class="safety">Safety: —</div>
-            <div id="nutrition" class="nutrition">Nutrition: —</div>
-          </div>
-
-          <div id="recipeCards" class="recipe-cards"></div>
+        <div id="resultArea" class="result-area hidden">
+          <img id="preview" src="" alt="preview" class="preview">
+          <div id="detected" class="detected"></div>
+          <div id="safety" class="safety"></div>
+          <div id="recipes" class="recipes"></div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- INGREDIENT CHECKER -->
-    <section id="ingredient" class="screen hidden">
-      <div class="box">
-        <div class="toprow">
-          <button class="back tiny" onclick="goMenu()">← Back</button>
-          <div class="screen-title">Ingredient Checker</div>
+      <section id="ingredient" class="page hidden">
+        <div class="topbar">
+          <button class="back" onclick="goMenu()">← Back</button>
+          <h2>Ingredient Checker</h2>
         </div>
-
         <div class="search-row">
-          <input id="ingInput" class="ingInput" placeholder="Type ingredient (e.g. garlic)" />
-          <button class="pixel-btn" onclick="checkIngredient()">Check</button>
+          <input id="ingInput" placeholder="Type ingredient (e.g. garlic)">
+          <button class="primary" onclick="checkIngredient()">Check</button>
         </div>
+        <div id="ingResult" class="ingResult"></div>
+      </section>
 
-        <div id="ingResult" class="ingResult">Type an ingredient and press Check.</div>
-      </div>
-    </section>
-
-    <!-- TUTORIAL -->
-    <section id="tutorial" class="screen hidden">
-      <div class="box">
-        <div class="toprow">
-          <button class="back tiny" onclick="goHome()">← Back</button>
-          <div class="screen-title">Tutorial</div>
+      <section id="tutorial" class="page hidden">
+        <div class="topbar">
+          <button class="back" onclick="goHome()">← Back</button>
+          <h2>Tutorial</h2>
         </div>
-        <div class="tutorial-body">
-          <p>Welcome to PetChef! Quick guide:</p>
+        <div class="tutorial-text">
+          <p>How to use:</p>
           <ol>
-            <li>Choose Dog or Cat on the home screen.</li>
-            <li>Upload a single clear photo of food or use Ingredient Checker.</li>
-            <li>Click a recipe card to view simple steps (demo uses alert popup).</li>
+            <li>Choose pet (Dog or Cat).</li>
+            <li>Upload or take a clear photo of a single dish.</li>
+            <li>Or use Ingredient Checker to type an ingredient.</li>
+            <li>Click recipe cards to view steps (in the demo, recipes come from static file).</li>
           </ol>
-          <p>Tip: for better detection, upload clean photos of a single dish. You can add more pixel art later.</p>
         </div>
-      </div>
-    </section>
-
-    <footer class="footer">Made with ❤️ — add your pixel art in /docs/images/</footer>
+      </section>
+    </main>
   </div>
 
   <script src="script.js"></script>
