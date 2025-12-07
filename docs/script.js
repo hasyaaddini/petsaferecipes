@@ -1,136 +1,100 @@
-// script.js (simple static behavior)
-let PET = null;
-let recipes = {};
-let harmful = {};
+let selectedPet = "";
 
-async function loadData() {
-  recipes = await fetch('data/recipes.json').then(r=>r.json());
-  harmful = await fetch('data/harmful_ingredients.json').then(r=>r.json());
-}
-loadData();
-
-function choosePet(p) {
-  PET = p;
-  document.getElementById('home').classList.add('hidden');
-  document.getElementById('menu').classList.remove('hidden');
-  document.getElementById('petTitle').innerText = p.toUpperCase();
+function selectPet(pet) {
+    selectedPet = pet;
+    document.getElementById('pet-title').innerText = "🐾 " + pet;
+    document.getElementById('home').style.display = 'none';
+    document.getElementById('features').style.display = 'block';
 }
 
-function goHome() {
-  document.getElementById('home').classList.remove('hidden');
-  document.getElementById('menu').classList.add('hidden');
-  hideAll();
-}
-function goMenu() {
-  document.getElementById('menu').classList.remove('hidden');
-  hideAll();
-}
-function hideAll(){
-  ['upload','ingredient','tutorial'].forEach(id=>{
-    document.getElementById(id).classList.add('hidden');
-  });
-  document.getElementById('resultArea').classList.add('hidden');
+// Show tutorial
+function showTutorial() {
+    document.getElementById('home').style.display = 'none';
+    document.getElementById('tutorial').style.display = 'block';
 }
 
-function showTutorial(){
-  hideAll();
-  document.getElementById('tutorial').classList.remove('hidden');
+function hideTutorial() {
+    document.getElementById('tutorial').style.display = 'none';
+    document.getElementById('home').style.display = 'block';
 }
 
-function openUpload(){
-  hideAll();
-  document.getElementById('upload').classList.remove('hidden');
+// Show one feature, hide others
+function showFeature(feature) {
+    let features = ['food', 'ingredient', 'mood'];
+    features.forEach(f => {
+        document.getElementById(f + '-feature').style.display = (f === feature) ? 'block' : 'none';
+    });
 }
 
-function openIngredientChecker(){
-  hideAll();
-  document.getElementById('ingredient').classList.remove('hidden');
-}
+// ================== FOOD CLASSIFIER ==================
+// Fake logic for demo
+function classifyFood() {
+    let fileInput = document.getElementById('food-file').value;
+    let name = fileInput.split('\\').pop().split('/').pop().split('.')[0]; // filename
+    let recipes = {
+        "pizza": ["Cheese & Chicken Mini Pizza", "Pumpkin Pet Pizza"],
+        "burger": ["Mini Chicken Burger", "Turkey Patty Bites"]
+    };
 
-function detectFood(){
-  const fileInput = document.getElementById('fileInput');
-  if(!fileInput.files || fileInput.files.length===0){
-    alert('Please choose an image file first.');
-    return;
-  }
-  const file = fileInput.files[0];
-  const url = URL.createObjectURL(file);
-  document.getElementById('preview').src = url;
-  document.getElementById('resultArea').classList.remove('hidden');
-
-  // simple automatic detection: check filename for keywords
-  const name = file.name.toLowerCase();
-  let detected = 'unknown';
-  const keywords = ['pizza','burger','salmon','rice','cookie','ramen','pasta','chocolate'];
-  for(const k of keywords){
-    if(name.includes(k)){
-      detected = k;
-      break;
-    }
-  }
-  document.getElementById('detected').innerText = 'Detected: ' + (detected==='unknown'? 'Unknown' : detected);
-  // safety
-  const s = computeSafety(detected);
-  const safetyEl = document.getElementById('safety');
-  if(s.status==='safe') safetyEl.innerHTML = '<div style="color:green">✅ Safe for '+PET+'s</div>';
-  else if(s.status==='unsafe') safetyEl.innerHTML = '<div style="color:red">❌ Unsafe: '+s.reasons.join(', ')+'</div>';
-  else safetyEl.innerHTML = '<div style="color:orange">⚠️ Caution</div>';
-
-  // show recipe cards if available
-  const recipesEl = document.getElementById('recipes');
-  recipesEl.innerHTML = '';
-  const entry = recipes[detected];
-  if(entry){
-    const alts = entry.alternatives || [];
-    if(alts.length===0){
-      recipesEl.innerHTML = '<div class="recipe-card">No alternatives listed.</div>';
+    let resultDiv = document.getElementById('food-result');
+    if (recipes[name]) {
+        let html = "<h4>Detected: " + name + "</h4>";
+        html += "<p>Pet-safe recipes:</p><ul>";
+        recipes[name].forEach(r => {
+            html += "<li>" + r + "</li>";
+        });
+        html += "</ul>";
+        resultDiv.innerHTML = html;
     } else {
-      alts.forEach(alt=>{
-        // alt may be key in recipes[detected].recipes
-        const rec = (entry.recipes && entry.recipes[alt]) || recipes[alt];
-        if(rec){
-          const card = document.createElement('div');
-          card.className = 'recipe-card';
-          card.innerHTML = `<strong>${rec.title || alt}</strong><div class="small">${rec.ingredients ? rec.ingredients.join(', ') : ''}</div>`;
-          card.onclick = ()=>{ alert('Recipe:\\n\\n' + (rec.steps? rec.steps.join('\\n') : 'No steps listed')); };
-          recipesEl.appendChild(card);
-        }
-      });
+        resultDiv.innerHTML = "<p>Food not recognized!</p>";
     }
-  } else {
-    recipesEl.innerHTML = '<div class="recipe-card">No recipe found in demo dataset.</div>';
-  }
 }
 
-function computeSafety(foodKey){
-  // if foodKey listed under harmful ingredient lists => unsafe
-  let reasons = [];
-  for(const ing in harmful){
-    const arr = harmful[ing];
-    if(Array.isArray(arr) && arr.includes(foodKey)){
-      reasons.push(ing);
-    }
-  }
-  // also check recipes safe_for
-  const rec = recipes[foodKey];
-  if(rec && rec.safe_for){
-    const petSafe = rec.safe_for[PET];
-    if(petSafe===false) return {status:'unsafe', reasons: [rec.reason || 'Listed as unsafe']};
-    if(petSafe===true) return {status:'safe', reasons:[]};
-  }
-  if(reasons.length>0) return {status:'unsafe', reasons: reasons};
-  return {status:'caution', reasons: []};
+// ================== INGREDIENT CHECKER ==================
+function checkIngredient() {
+    let input = document.getElementById('ingredient-input').value.toLowerCase();
+    let harmful = {
+        "onion": "❌ Highly toxic for cats and dogs",
+        "garlic": "❌ Avoid, causes anemia",
+        "chocolate": "❌ Very dangerous for pets"
+    };
+    let safeMsg = "✔ Safe for your pet!";
+    document.getElementById('ingredient-result').innerText = harmful[input] || safeMsg;
 }
 
-function checkIngredient(){
-  const ing = document.getElementById('ingInput').value.trim().toLowerCase();
-  const el = document.getElementById('ingResult');
-  if(!ing){ el.innerText = 'Type an ingredient and press Check.'; return; }
-  // harmful is mapping ingredient -> list of foods; if ingredient key exists, it's unsafe
-  if(harmful[ing]){
-    el.innerHTML = `<div style="color:red">❌ Never give ${ing} to pets. Reason: listed as harmful in DB.</div>`;
-  } else {
-    el.innerHTML = `<div style="color:green">✅ ${ing} is not listed as harmful in demo DB. Still verify with a vet if unsure.</div>`;
-  }
+// ================== PET MOOD ANALYZER ==================
+function analyzeMood() {
+    let desc = document.getElementById('mood-input').value.toLowerCase();
+    let mood = "neutral";
+
+    if (desc.includes("meow") || desc.includes("cry") || desc.includes("loud")) mood = "anxious";
+    else if (desc.includes("hiss") || desc.includes("angry") || desc.includes("scratch")) mood = "angry";
+    else if (desc.includes("sleep") || desc.includes("yawn") || desc.includes("tired")) mood = "sleepy";
+    else if (desc.includes("play") || desc.includes("run") || desc.includes("jump")) mood = "playful";
+
+    let musicOptions = {
+        "anxious": ["Calming Piano", "Lo-fi for Pets"],
+        "angry": ["Soft Classical", "Ambient Forest"],
+        "sleepy": ["Gentle Ambient Pads"],
+        "playful": ["Upbeat Cat Chimes"],
+        "neutral": ["Any playlist"]
+    };
+
+    let foodOptions = {
+        "anxious": ["Warm Chicken Broth", "Pumpkin Puree"],
+        "angry": ["Crunchy calming treats"],
+        "sleepy": ["Light tuna snack"],
+        "playful": ["Protein bites", "Interactive snack ball treat"],
+        "neutral": ["Regular pet-safe food"]
+    };
+
+    let music = musicOptions[mood][Math.floor(Math.random() * musicOptions[mood].length)];
+    let food = foodOptions[mood][Math.floor(Math.random() * foodOptions[mood].length)];
+
+    document.getElementById('mood-result').innerHTML = `
+        <p>Mood detected: <b>${mood}</b></p>
+        <p>🎵 Music: ${music}</p>
+        <p>🍖 Food: ${food}</p>
+    `;
 }
 
