@@ -1,0 +1,6 @@
+{
+  "pizza": {"calories": 266, "protein": 11, "fat": 10, "carbs": 33},
+  "burger": {"calories": 295, "protein": 17, "fat": 12, "carbs": 33},
+  "salmon": {"calories": 208, "protein": 20, "fat": 13, "carbs": 0}
+}
+
